@@ -1,2 +1,3 @@
-export { DepthFirstSearch } from "./depth-first-search/depth-first-search";
-export { BaseDepthFirstSearch, TreeTraversalType} from "./depth-first-search/base-depth-first-search";
+export { MapBasedDepthFirstSearch, TreeTraversalType } from "./tree/depth-first-search/map-based-depth-first-search";
+export { NodeBasedDepthFirstSearch } from "./tree/depth-first-search/node-based-depth-first-search";
+export { ParametersGetter, TCommandLineParameters } from "./command-line/parameters-getter";
