@@ -3,5 +3,6 @@
 **/dist/
 **/logs/
 **/*.js
+**/*.js.map
 
 npm-debug*
