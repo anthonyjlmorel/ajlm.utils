@@ -4,15 +4,18 @@
   "description": "Some serviceable classes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node ./node_modules/mocha/bin/mocha tests",
     "build": "npm run compile",
-    "compile": "node ../../node_modules/typescript/bin/tsc -p ."
+    "compile": "node ./node_modules/typescript/bin/tsc -p ."
   },
   "dependencies": {
+    
   },
   "author": "Anthony JL Morel",
   "license": "MIT",
   "devDependencies": {
-    "typescript": "~3.4.0"
+    "@types/mocha": "~5.2.7",
+    "typescript": "~3.4.0",
+    "mocha": "~5.2.0"
   }
 }
