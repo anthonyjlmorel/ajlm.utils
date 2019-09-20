@@ -1,6 +1,7 @@
 ﻿import { MapBasedDepthFirstSearch, TreeTraversalType } from './map-based-depth-first-search';
 
-// @TODO to test ...
+// @TODO to test
+
 
 /**
  * DFS algorithm where visited node are marked in the node itself thanks to JS

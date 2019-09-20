@@ -1,4 +1,4 @@
-﻿import { MapBasedTreeSearch } from '../map-based-tree-search';
+﻿import { MapBasedGraphSearch } from '../map-based-graph-search';
 
 /**
  * Defining tree traversal type in a DFS
@@ -12,7 +12,7 @@ export enum TreeTraversalType {
  * Defining async DFS algorithm where visited nodes
  * are kept in a map.
  */
-export class MapBasedDepthFirstSearch<T> extends MapBasedTreeSearch<T> {
+export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
 
     constructor(
         /**
@@ -27,7 +27,6 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedTreeSearch<T> {
         super(adjacentNodeGetter, hashMethod);
     }
 
-
     /**
      * Triggers DFS. The callback is called against each unvisited node.
      */
@@ -37,16 +36,21 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedTreeSearch<T> {
         this.markedNodesMap = {};
 
         await this.performInternal(node, null, 0, callback, treeTraversalType);
-
+        
         await this.unmarkNodes();
     }
+    
 
     /**
-     * DFS core algorithm
+     * DFS core algorithm ("Recursive")
      */
-    private async performInternal(node: T, parent: T, depth: number, callback: (node: T, parentNode: T, depth: number) => Promise<void | boolean>, treeTraversalType: TreeTraversalType): Promise<void> {
-        var adjacentNodes = null;
-        var isNodeMarked: boolean = await this.isNodeMarked(node);
+    private async performInternal(node: T, parent: T, depth: number, 
+                                callback: (node: T, parentNode: T, depth: number) => Promise<void | boolean>, 
+                                treeTraversalType: TreeTraversalType): Promise<void> {
+
+        let adjacentNodes = null;
+        let nodeHash: string = await this.getNodeHash(node);
+        let isNodeMarked: boolean = this.markedNodesMap[ nodeHash ] != null;
 
         if (node == null || isNodeMarked == true) {
             return;
@@ -54,7 +58,7 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedTreeSearch<T> {
 
         // Mark node as discovered to avoid
         // processing it twice
-        await this.markNode(node);
+        this.markedNodesMap[ nodeHash ] = node;
 
         if (treeTraversalType == TreeTraversalType.PreOrder) {
             var result = await callback(node, parent, depth);
@@ -70,7 +74,6 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedTreeSearch<T> {
             for(var i = 0; i< adjacentNodes.length; i++){
                 await this.performInternal(adjacentNodes[i], node, depth + 1, callback, treeTraversalType);
             }
-            
         }
 
         if (treeTraversalType == TreeTraversalType.PostOrder) {

@@ -1,5 +1,5 @@
 
-export abstract class MapBasedTreeSearch<T> {
+export abstract class MapBasedGraphSearch<T> {
 
     protected markedNodesMap: { [hash: string]: T; } = {};
 

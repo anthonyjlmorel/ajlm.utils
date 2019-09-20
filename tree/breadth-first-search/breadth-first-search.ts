@@ -1,8 +1,8 @@
-import { MapBasedTreeSearch } from '../map-based-tree-search';
+import { MapBasedGraphSearch } from '../map-based-graph-search';
 
 
 // @TODO to finish
-export class BreadthFirstSearch<T> extends MapBasedTreeSearch<T> {
+export class BreadthFirstSearch<T> extends MapBasedGraphSearch<T> {
 
     
     /**

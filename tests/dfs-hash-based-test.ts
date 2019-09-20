@@ -2,7 +2,7 @@ import { ok, fail } from "assert";
 
 import { MapBasedDepthFirstSearch, TreeTraversalType } from "..";
 
-describe("Testing DFS Algorithm", function() {
+describe("Testing DFS Algorithm Based on Hash Map", function() {
 
     let graph = {
         name: 1,
@@ -55,7 +55,7 @@ describe("Testing DFS Algorithm", function() {
         await dfs.perform(graph, async (node: any)=> {
 
             if(!touch(node.name)){
-                throw `Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`;
+                throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
             }
 
         }, TreeTraversalType.PostOrder);
@@ -70,7 +70,7 @@ describe("Testing DFS Algorithm", function() {
         await dfs.perform(graph, async (node: any)=> {
 
             if(!touch(node.name)){
-                throw `Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`;
+                throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
             }
 
         }, TreeTraversalType.PreOrder);
@@ -86,11 +86,12 @@ describe("Testing DFS Algorithm", function() {
             if(!mapNode[node.name]){
                 mapNode[node.name] = true;
             } else {
-                throw `Visiting node ${node.name} twice`;
+                throw new Error(`Visiting node ${node.name} twice`);
             }
 
         }, TreeTraversalType.PostOrder);
         
     });
+
 
 });
