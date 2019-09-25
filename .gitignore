@@ -6,3 +6,5 @@
 **/*.js.map
 
 npm-debug*
+.hash
+*.log
