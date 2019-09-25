@@ -23,19 +23,34 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
         /**
          * Method generating a hash to uniquely ID node
          */
-        hashMethod: (node: T)=>Promise<string>){
+        hashMethod: (node: T)=>Promise<string>,
+        
+        /**
+         * Callback for already visited nodes
+         */
+        private alreadyVisited: (node: T)=> Promise<void> = async (node: T)=> {}) {
+
         super(adjacentNodeGetter, hashMethod);
+
+
     }
 
     /**
      * Triggers DFS. The callback is called against each unvisited node.
      */
-    public async perform(node: T, callback: (node: T, parentNode: T, depth: number) => Promise<void | boolean>, 
-                        treeTraversalType: TreeTraversalType): Promise<void> {
+    public async perform(node: T, callback: (node: T, parentNode: T) => Promise<void | boolean>, 
+                        treeTraversalType: TreeTraversalType,
+                        type: "recursive" | "iterative" = "recursive"): Promise<void> {
         
         this.markedNodesMap = {};
 
-        await this.performInternal(node, null, 0, callback, treeTraversalType);
+        if(type == "recursive"){
+            await this.performRecursive(node, null, callback, treeTraversalType);
+        }
+        else {
+            await this.performIterative(node, callback, treeTraversalType);
+        }
+        
         
         await this.unmarkNodes();
     }
@@ -44,24 +59,25 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
     /**
      * DFS core algorithm ("Recursive")
      */
-    private async performInternal(node: T, parent: T, depth: number, 
-                                callback: (node: T, parentNode: T, depth: number) => Promise<void | boolean>, 
+    private async performRecursive(node: T, parent: T, 
+                                callback: (node: T, parentNode: T) => Promise<void | boolean>, 
                                 treeTraversalType: TreeTraversalType): Promise<void> {
 
         let adjacentNodes = null;
-        let nodeHash: string = await this.getNodeHash(node);
-        let isNodeMarked: boolean = this.markedNodesMap[ nodeHash ] != null;
+        
+        let isNodeMarked: boolean = await this.isNodeMarked(node);
 
         if (node == null || isNodeMarked == true) {
+            await this.alreadyVisited(node);
             return;
         }
 
         // Mark node as discovered to avoid
         // processing it twice
-        this.markedNodesMap[ nodeHash ] = node;
+        await this.markNode(node);
 
         if (treeTraversalType == TreeTraversalType.PreOrder) {
-            var result = await callback(node, parent, depth);
+            var result = await callback(node, parent);
             if (result != undefined && !result) {
                 return;
             }
@@ -72,16 +88,57 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
         if (adjacentNodes) {
             
             for(var i = 0; i< adjacentNodes.length; i++){
-                await this.performInternal(adjacentNodes[i], node, depth + 1, callback, treeTraversalType);
+                await this.performRecursive(adjacentNodes[i], node, callback, treeTraversalType);
             }
         }
 
         if (treeTraversalType == TreeTraversalType.PostOrder) {
-            var result = await callback(node, parent, depth);
+            var result = await callback(node, parent);
             if (result != undefined && !result) {
                 return;
             }
         }
+
+    }
+
+    /**
+     * DFS core algorithm ("Iterative")
+     * 
+     * @TODO today, only post order is supported / TO TEST (does not seem to work ...)
+     */
+    private async performIterative(node: T, 
+                                callback: (node: T, parentNode: T) => Promise<void | boolean>, 
+                                treeTraversalType: TreeTraversalType): Promise<void> {
+
+        let adjacentNodes: T[] = null;
+        let queue: { node: T; parent: T; }[] = [{node: node, parent: null}];
+        let resultQueue: { node: T; parent: T; }[] = [];
+
+        while(queue.length){
+            let queueItem = queue.pop();
+
+            let isNodeMarked: boolean = await this.isNodeMarked(queueItem.node);
+            if(isNodeMarked){
+                await this.alreadyVisited(node);
+                continue;
+            }
+
+            resultQueue.push(queueItem);
+            await this.markNode(queueItem.node);
+
+            adjacentNodes = await this.getAdjacentNodes(queueItem.node);
+
+            adjacentNodes.forEach((node: T)=>{
+                queue.push({ node: node, parent: queueItem.node });
+            });
+        }
+
+        
+        while(resultQueue.length){
+            let item = resultQueue.pop();
+            await callback(item.node, item.parent);
+        }
+        
 
     }
 }

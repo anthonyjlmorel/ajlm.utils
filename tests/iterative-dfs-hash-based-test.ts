@@ -1,46 +1,9 @@
 import { ok, fail } from "assert";
 
-import { NodeBasedDepthFirstSearch, TreeTraversalType } from "..";
+import { MapBasedDepthFirstSearch, TreeTraversalType } from "..";
 
-describe("Testing DFS Algorithm Based on JS Node Instance", function() {
-    
-    let node1 = {
-        name: 1,
-        children: []
-    };
-    let node2 = {
-        name: 2,
-        children: [
-        ]
-    };
+describe("Testing Iterative DFS Algorithm Based on Hash Map", function() {
 
-    let node5 = {
-        name: 5,
-        children: [
-        ]
-    };
-
-    let node3 = {
-        name: 3,
-        children: [
-        ]
-    };
-
-    let node4 = {
-        name: 4, 
-        children: []
-    };
-
-    node2.children.push(node5);
-    node5.children.push(node4);
-    node3.children.push(node4);
-    node4.children.push(node1);
-
-    node1.children.push(node2, node3);
-
-    let graph = node1;
-
-    /*
     let graph = {
         name: 1,
         children: [
@@ -51,7 +14,8 @@ describe("Testing DFS Algorithm Based on JS Node Instance", function() {
                         name: 5,
                         children: [
                             {
-                                name: 4 // should visit this one and not the other one
+                                name: 4, // should visit this one and not the other one
+                                children: []
                             }
                         ]
                     }
@@ -62,14 +26,17 @@ describe("Testing DFS Algorithm Based on JS Node Instance", function() {
                 children: [
                     {
                         name: 4, // Should not treat it as it has already been visited
-                        children: {
-                            name: 1 // Should not treat it as it has already been visited
-                        }
+                        children: [
+                            {
+                                name: 1, // Should not treat it as it has already been visited
+                                children: []
+                            }
+                        ]
                     }
                 ]
             }
         ]
-    };*/
+    };
 
     let touchOrder: number[];
     let currentTouchIndex: number;
@@ -80,23 +47,26 @@ describe("Testing DFS Algorithm Based on JS Node Instance", function() {
         return false;
     };
 
-    let dfs = new NodeBasedDepthFirstSearch<any>("children");
+    let hashMethod = async(node) => { return node.name; };
+
+    let dfs = new MapBasedDepthFirstSearch<any>("children", hashMethod);
 
     it("Should traverse in the right order (PostOrder)", async function(){
 
-        touchOrder = [4, 5, 2, 3, 1];
+        touchOrder = [5, 2, 4, 3, 1];
         currentTouchIndex = 0;
 
-        await dfs.perform(graph, async (node: any)=> {
+        await dfs.perform(graph, async (node: any, parent: any)=> {
 
             if(!touch(node.name)){
                 throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
             }
-
+            
         }, TreeTraversalType.PostOrder);
         
     });
 
+    /*  @TODO to implement ...
     it("Should traverse in the right order (PreOrder)", async function(){
 
         touchOrder = [1, 2, 5, 4, 3];
@@ -108,9 +78,9 @@ describe("Testing DFS Algorithm Based on JS Node Instance", function() {
                 throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
             }
 
-        }, TreeTraversalType.PreOrder);
+        }, TreeTraversalType.PreOrder, "iterative");
         
-    });
+    }); */
 
     it("Should not visit twice the same node", async function(){
 
@@ -124,8 +94,9 @@ describe("Testing DFS Algorithm Based on JS Node Instance", function() {
                 throw new Error(`Visiting node ${node.name} twice`);
             }
 
-        }, TreeTraversalType.PostOrder);
+        }, TreeTraversalType.PostOrder, "iterative");
         
     });
+
 
 });

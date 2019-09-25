@@ -1,9 +1,46 @@
 import { ok, fail } from "assert";
 
-import { MapBasedDepthFirstSearch, TreeTraversalType } from "..";
+import { NodeBasedDepthFirstSearch, TreeTraversalType } from "..";
 
-describe("Testing DFS Algorithm Based on Hash Map", function() {
+describe("Testing Recursive DFS Algorithm Based on JS Node Instance", function() {
+    
+    let node1 = {
+        name: 1,
+        children: []
+    };
+    let node2 = {
+        name: 2,
+        children: [
+        ]
+    };
 
+    let node5 = {
+        name: 5,
+        children: [
+        ]
+    };
+
+    let node3 = {
+        name: 3,
+        children: [
+        ]
+    };
+
+    let node4 = {
+        name: 4, 
+        children: []
+    };
+
+    node2.children.push(node5);
+    node5.children.push(node4);
+    node3.children.push(node4);
+    node4.children.push(node1);
+
+    node1.children.push(node2, node3);
+
+    let graph = node1;
+
+    /*
     let graph = {
         name: 1,
         children: [
@@ -32,7 +69,7 @@ describe("Testing DFS Algorithm Based on Hash Map", function() {
                 ]
             }
         ]
-    };
+    };*/
 
     let touchOrder: number[];
     let currentTouchIndex: number;
@@ -43,9 +80,7 @@ describe("Testing DFS Algorithm Based on Hash Map", function() {
         return false;
     };
 
-    let hashMethod = async(node) => { return node.name; };
-
-    let dfs = new MapBasedDepthFirstSearch<any>("children", hashMethod);
+    let dfs = new NodeBasedDepthFirstSearch<any>("children");
 
     it("Should traverse in the right order (PostOrder)", async function(){
 
@@ -92,6 +127,5 @@ describe("Testing DFS Algorithm Based on Hash Map", function() {
         }, TreeTraversalType.PostOrder);
         
     });
-
 
 });

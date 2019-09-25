@@ -1,6 +1,9 @@
 
 export abstract class MapBasedGraphSearch<T> {
 
+    /**
+     * Ok, It is not really a hash map here :) For now
+     */
     protected markedNodesMap: { [hash: string]: T; } = {};
 
     constructor(

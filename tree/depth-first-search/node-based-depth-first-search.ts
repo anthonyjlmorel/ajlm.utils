@@ -43,12 +43,12 @@ export class NodeBasedDepthFirstSearch<T> extends MapBasedDepthFirstSearch<T> {
     }
 
     // @overriding
-    public async perform(node: T, callback: (node: T, parent: T, depth: number) => Promise<void>, treeTraversalType: TreeTraversalType): Promise<void> {
+    public async perform(node: T, callback: (node: T, parent: T) => Promise<void>, treeTraversalType: TreeTraversalType): Promise<void> {
         // Initialize the marked node list
         this.markedNodesList = [];
         // Call the default perform method
-        await super.perform(node, (node: T, parent: T, depth: number) => {
-            return callback(node, parent, depth);
+        await super.perform(node, (node: T, parent: T) => {
+            return callback(node, parent);
         }, treeTraversalType);
     }
     
