@@ -6,6 +6,12 @@ export abstract class MapBasedGraphSearch<T> {
      */
     protected markedNodesMap: { [hash: string]: T; } = {};
 
+    /**
+     * Flag indicating if algorithms should track visited nodes
+     * to avoid visiting them more than once
+     */
+    protected visitNodeOnce: boolean = false;
+
     constructor(
         /**
          * Property allowing the algorithm to browse node connection in the tree.
@@ -15,7 +21,10 @@ export abstract class MapBasedGraphSearch<T> {
         /**
          * Method generating a hash to uniquely ID node
          */
-        protected hashMethod: (node: T)=>Promise<string>){}
+        protected hashMethod: (node: T)=>Promise<string> = null){
+
+        this.visitNodeOnce = hashMethod != null;
+    }
         
     /**
      * Retrieves adjacent nodes

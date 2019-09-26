@@ -1,6 +1,6 @@
 
 export type TCommandLineParameters = {
-    [param: string]: any;
+    [param: string]: string;
 };
 
 export class ParametersGetter {

@@ -23,22 +23,22 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
         /**
          * Method generating a hash to uniquely ID node
          */
-        hashMethod: (node: T)=>Promise<string>,
+        hashMethod: (node: T)=>Promise<string> = null,
         
         /**
          * Callback for already visited nodes
          */
-        private alreadyVisited: (node: T)=> Promise<void> = async (node: T)=> {}) {
+        private alreadyVisited: (node: T, parent: T)=> Promise<void> = async (node: T)=> {}) {
 
         super(adjacentNodeGetter, hashMethod);
-
 
     }
 
     /**
      * Triggers DFS. The callback is called against each unvisited node.
      */
-    public async perform(node: T, callback: (node: T, parentNode: T) => Promise<void | boolean>, 
+    public async perform(node: T, 
+                        callback: (node: T, parentNode: T) => Promise<void | boolean>, 
                         treeTraversalType: TreeTraversalType,
                         type: "recursive" | "iterative" = "recursive"): Promise<void> {
         
@@ -65,16 +65,19 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
 
         let adjacentNodes = null;
         
-        let isNodeMarked: boolean = await this.isNodeMarked(node);
+        if(this.visitNodeOnce){
+            let isNodeMarked: boolean = await this.isNodeMarked(node);
 
-        if (node == null || isNodeMarked == true) {
-            await this.alreadyVisited(node);
-            return;
+            if (node == null || isNodeMarked == true) {
+                await this.alreadyVisited(node, parent);
+                return;
+            }
+    
+            // Mark node as discovered to avoid
+            // processing it twice
+            await this.markNode(node);
         }
-
-        // Mark node as discovered to avoid
-        // processing it twice
-        await this.markNode(node);
+        
 
         if (treeTraversalType == TreeTraversalType.PreOrder) {
             var result = await callback(node, parent);
@@ -86,7 +89,6 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
         adjacentNodes = await this.getAdjacentNodes(node);
 
         if (adjacentNodes) {
-            
             for(var i = 0; i< adjacentNodes.length; i++){
                 await this.performRecursive(adjacentNodes[i], node, callback, treeTraversalType);
             }
@@ -117,14 +119,18 @@ export class MapBasedDepthFirstSearch<T> extends MapBasedGraphSearch<T> {
         while(queue.length){
             let queueItem = queue.pop();
 
-            let isNodeMarked: boolean = await this.isNodeMarked(queueItem.node);
-            if(isNodeMarked){
-                await this.alreadyVisited(node);
-                continue;
+            if(this.visitNodeOnce){
+                let isNodeMarked: boolean = await this.isNodeMarked(queueItem.node);
+                if(isNodeMarked){
+                    await this.alreadyVisited(queueItem.node, queueItem.parent);
+                    continue;
+                }
+                await this.markNode(queueItem.node);
             }
+            
 
             resultQueue.push(queueItem);
-            await this.markNode(queueItem.node);
+            
 
             adjacentNodes = await this.getAdjacentNodes(queueItem.node);
 

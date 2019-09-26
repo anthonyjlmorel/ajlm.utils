@@ -17,7 +17,7 @@ export class NodeBasedDepthFirstSearch<T> extends MapBasedDepthFirstSearch<T> {
 
     constructor(adjacentNodePropertyName: string | ((node: T)=>Promise<T[]>) ) {
         // the hash method won't be used
-        super(adjacentNodePropertyName, (node: T) => { return new Promise(null); });
+        super(adjacentNodePropertyName, null);
     }
 
     // @overriding
