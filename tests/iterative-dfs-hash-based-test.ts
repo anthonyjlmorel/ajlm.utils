@@ -53,7 +53,7 @@ describe("Testing Iterative DFS Algorithm Based on Hash Map", function() {
 
     it("Should traverse in the right order (PostOrder)", async function(){
 
-        touchOrder = [5, 2, 4, 3, 1];
+        touchOrder = [4, 5, 2, 3, 1];
         currentTouchIndex = 0;
 
         await dfs.perform(graph, async (node: any, parent: any)=> {
@@ -61,7 +61,7 @@ describe("Testing Iterative DFS Algorithm Based on Hash Map", function() {
             if(!touch(node.name)){
                 throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
             }
-            
+                        
         }, TreeTraversalType.PostOrder);
         
     });

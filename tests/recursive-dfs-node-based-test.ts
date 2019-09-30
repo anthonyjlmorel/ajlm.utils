@@ -31,12 +31,15 @@ describe("Testing Recursive DFS Algorithm Based on JS Node Instance", function()
         children: []
     };
 
+    let node6 = {
+        name: 6,
+        children: []
+    }
+
     node2.children.push(node5);
     node5.children.push(node4);
-    node3.children.push(node4);
-    node4.children.push(node1);
 
-    node1.children.push(node2, node3);
+    node1.children.push(node2, node3, node6);
 
     let graph = node1;
 
@@ -60,13 +63,10 @@ describe("Testing Recursive DFS Algorithm Based on JS Node Instance", function()
             {
                 name: 3,
                 children: [
-                    {
-                        name: 4, // Should not treat it as it has already been visited
-                        children: {
-                            name: 1 // Should not treat it as it has already been visited
-                        }
-                    }
                 ]
+            }, 
+            {
+                name: 6
             }
         ]
     };*/
@@ -84,7 +84,7 @@ describe("Testing Recursive DFS Algorithm Based on JS Node Instance", function()
 
     it("Should traverse in the right order (PostOrder)", async function(){
 
-        touchOrder = [4, 5, 2, 3, 1];
+        touchOrder = [4, 5, 2, 3, 6, 1];
         currentTouchIndex = 0;
 
         await dfs.perform(graph, async (node: any)=> {
@@ -99,7 +99,7 @@ describe("Testing Recursive DFS Algorithm Based on JS Node Instance", function()
 
     it("Should traverse in the right order (PreOrder)", async function(){
 
-        touchOrder = [1, 2, 5, 4, 3];
+        touchOrder = [1, 2, 5, 4, 3, 6];
         currentTouchIndex = 0;
 
         await dfs.perform(graph, async (node: any)=> {
