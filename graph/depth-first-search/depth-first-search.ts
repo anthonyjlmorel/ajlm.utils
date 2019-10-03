@@ -1,4 +1,4 @@
-﻿import { GraphTraversal, TGraphTraversalOptions, TreeTraversalType } from '../graph-traversal';
+﻿import { GraphTraversal, TGraphTraversalOptions, TraversalType } from '../graph-traversal';
 
 
 
@@ -20,7 +20,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
      * Triggers DFS
      */
     public async perform(node: T, 
-        treeTraversalType: TreeTraversalType = TreeTraversalType.PostOrder,
+        treeTraversalType: TraversalType = TraversalType.PostOrder,
         type: "recursive" | "iterative" = "recursive"): Promise<void> {
         
         this.initializeMaps();
@@ -38,13 +38,13 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
     /**
      * DFS core algorithm ("Recursive")
      */
-    private async performRecursive(node: T, treeTraversalType: TreeTraversalType): Promise<void> {
+    private async performRecursive(node: T, treeTraversalType: TraversalType): Promise<void> {
 
         // mark as discovered
         await this.markNodeAsDiscovered(node);
 
         // call processing method early
-        if(treeTraversalType == TreeTraversalType.PreOrder){
+        if(treeTraversalType == TraversalType.PreOrder){
             await this.processNode(node);
             // mark as processed
             await this.markNodeAsProcessed(node);
@@ -83,7 +83,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         }
 
         // call processing method late
-        if (treeTraversalType == TreeTraversalType.PostOrder) {
+        if (treeTraversalType == TraversalType.PostOrder) {
             await this.processNode(node);
             // mark as processed
             await this.markNodeAsProcessed(node);
@@ -98,7 +98,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
      * 
      * @TODO ...
      */
-    private async performIterative(node: T, treeTraversalType: TreeTraversalType): Promise<void> {
+    private async performIterative(node: T, treeTraversalType: TraversalType): Promise<void> {
 
         let stack: { node: T; parent: T; }[] = [{node: node, parent: null}];
         let resultQueue: { type: "vertex" | "edge", node: T, parent: T }[] = [];
@@ -106,7 +106,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         while(stack.length){
             let queueItem = stack.pop();
 
-            if(treeTraversalType == TreeTraversalType.PreOrder){
+            if(treeTraversalType == TraversalType.PreOrder){
                 resultQueue.push({
                     node: queueItem.node,
                     parent: queueItem.parent,
@@ -141,7 +141,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
                 }
             }
 
-            if(treeTraversalType == TreeTraversalType.PostOrder){
+            if(treeTraversalType == TraversalType.PostOrder){
                 resultQueue.push({
                     node: queueItem.node,
                     parent: queueItem.parent,

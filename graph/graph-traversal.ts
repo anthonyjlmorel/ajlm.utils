@@ -1,7 +1,7 @@
 /**
  * Defining tree traversal type
  */
-export enum TreeTraversalType {
+export enum TraversalType {
     PreOrder,
     PostOrder
 }

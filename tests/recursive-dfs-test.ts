@@ -1,6 +1,6 @@
 import { ok, fail } from "assert";
 
-import { DepthFirstSearch, TreeTraversalType } from "..";
+import { DepthFirstSearch, TraversalType } from "..";
 
 describe("Testing Recursive DFS Algorithm", function() {
 
@@ -65,7 +65,7 @@ describe("Testing Recursive DFS Algorithm", function() {
             }
         });
 
-        await dfs.perform(graph, TreeTraversalType.PostOrder);
+        await dfs.perform(graph, TraversalType.PostOrder);
         
     });
 
@@ -86,7 +86,7 @@ describe("Testing Recursive DFS Algorithm", function() {
             }
         });
 
-        await dfs.perform(graph, TreeTraversalType.PreOrder);
+        await dfs.perform(graph, TraversalType.PreOrder);
         
     });
 
@@ -108,7 +108,7 @@ describe("Testing Recursive DFS Algorithm", function() {
             }
         });
 
-        await dfs.perform(graph, TreeTraversalType.PostOrder);
+        await dfs.perform(graph, TraversalType.PostOrder);
         
     });
 

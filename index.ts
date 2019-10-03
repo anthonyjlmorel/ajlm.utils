@@ -1,7 +1,7 @@
 // Graph Traversal
-export { DepthFirstSearch } from "./tree/depth-first-search/depth-first-search";
-export { TGraphTraversalOptions, TreeTraversalType } from "./tree/graph-traversal";
-export { BreadthFirstSearch } from "./tree/breadth-first-search/breadth-first-search";
+export { DepthFirstSearch } from "./graph/depth-first-search/depth-first-search";
+export { TGraphTraversalOptions, TraversalType } from "./graph/graph-traversal";
+export { BreadthFirstSearch } from "./graph/breadth-first-search/breadth-first-search";
 
 
 // Command Line Parameters

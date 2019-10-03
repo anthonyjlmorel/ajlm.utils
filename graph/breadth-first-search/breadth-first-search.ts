@@ -1,4 +1,4 @@
-import { GraphTraversal, TreeTraversalType } from '../graph-traversal';
+import { GraphTraversal, TraversalType } from '../graph-traversal';
 
 
 /**
@@ -12,7 +12,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
     /**
      * Triggers BFS. The callback is called against each unvisited node.
      */
-    public async perform(node: T, treeTraversal: TreeTraversalType): Promise<void> {
+    public async perform(node: T, treeTraversal: TraversalType): Promise<void> {
         
         this.initializeMaps();
 
@@ -21,7 +21,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
     }
 
 
-    private async performInternal(node: T, treeTraversal: TreeTraversalType = TreeTraversalType.PostOrder): Promise<void> {
+    private async performInternal(node: T, treeTraversal: TraversalType = TraversalType.PostOrder): Promise<void> {
     
         let queue: { node: T; parent:T; level: number; } [] = [ { node: node, parent: null, level: 0 } ];
 
@@ -31,7 +31,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
 
             let v = queue.shift();
 
-            if(treeTraversal == TreeTraversalType.PreOrder){
+            if(treeTraversal == TraversalType.PreOrder){
                 await this.processNode(v.node);
                 await this.markNodeAsProcessed(v.node);
             }
@@ -53,7 +53,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
                 }
             }
 
-            if(treeTraversal == TreeTraversalType.PostOrder){
+            if(treeTraversal == TraversalType.PostOrder){
                 await this.processNode(v.node);
                 await this.markNodeAsProcessed(v.node);
             }
