@@ -1,8 +1,8 @@
 import { ok, fail } from "assert";
 
-import { MapBasedDepthFirstSearch, TreeTraversalType } from "..";
+import { DepthFirstSearch, TreeTraversalType } from "..";
 
-describe("Testing Recursive DFS Algorithm Based on Hash Map", function() {
+describe("Testing Recursive DFS Algorithm", function() {
 
     let graph = {
         name: 1,
@@ -47,20 +47,25 @@ describe("Testing Recursive DFS Algorithm Based on Hash Map", function() {
 
     let hashMethod = async(node) => { return node.name; };
 
-    let dfs = new MapBasedDepthFirstSearch<any>("children", hashMethod);
 
     it("Should traverse in the right order (PostOrder)", async function(){
 
         touchOrder = [4, 5, 2, 3, 1];
         currentTouchIndex = 0;
 
-        await dfs.perform(graph, async (node: any)=> {
-
-            if(!touch(node.name)){
-                throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
+        let dfs = new DepthFirstSearch<any>( { 
+            adjacentNodeGetter: "children",
+            getNodeHash: hashMethod,
+            processNode: async (node: any)=> {
+    
+                if(!touch(node.name)){
+                    throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
+                }
+    
             }
+        });
 
-        }, TreeTraversalType.PostOrder);
+        await dfs.perform(graph, TreeTraversalType.PostOrder);
         
     });
 
@@ -69,13 +74,19 @@ describe("Testing Recursive DFS Algorithm Based on Hash Map", function() {
         touchOrder = [1, 2, 5, 4, 3];
         currentTouchIndex = 0;
 
-        await dfs.perform(graph, async (node: any)=> {
-
-            if(!touch(node.name)){
-                throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
+        let dfs = new DepthFirstSearch<any>( { 
+            adjacentNodeGetter: "children",
+            getNodeHash: hashMethod,
+            processNode: async (node: any)=> {
+    
+                if(!touch(node.name)){
+                    throw new Error(`Calling on ${node.name} where ${touchOrder[currentTouchIndex-1]} is expected`);
+                }
+    
             }
+        });
 
-        }, TreeTraversalType.PreOrder);
+        await dfs.perform(graph, TreeTraversalType.PreOrder);
         
     });
 
@@ -83,15 +94,21 @@ describe("Testing Recursive DFS Algorithm Based on Hash Map", function() {
 
         let mapNode = {};
 
-        await dfs.perform(graph, async (node: any)=> {
-
-            if(!mapNode[node.name]){
-                mapNode[node.name] = true;
-            } else {
-                throw new Error(`Visiting node ${node.name} twice`);
+        let dfs = new DepthFirstSearch<any>( { 
+            adjacentNodeGetter: "children",
+            getNodeHash: hashMethod,
+            processNode: async (node: any)=> {
+    
+                if(!mapNode[node.name]){
+                    mapNode[node.name] = true;
+                } else {
+                    throw new Error(`Visiting node ${node.name} twice`);
+                }
+    
             }
+        });
 
-        }, TreeTraversalType.PostOrder);
+        await dfs.perform(graph, TreeTraversalType.PostOrder);
         
     });
 
