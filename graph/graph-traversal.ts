@@ -48,6 +48,16 @@ export abstract class GraphTraversal<T> {
     protected processedNodesMap: { [hash: string]: T; } = {};
 
     /**
+     * Nodes by hashes
+     */
+    protected hashedNodes : { [hash: string]: T; } = {};
+
+    /**
+     * Parents map
+     */
+    protected parentMap: { [nodeHash: string]: string; } = {};
+
+    /**
      * Options
      */
     protected options: TGraphTraversalOptions<T>;
@@ -70,7 +80,6 @@ export abstract class GraphTraversal<T> {
         for(var k in defaultOptions) {
             this.options[k] = options[k] == undefined ? defaultOptions[k] : options[k];
         }
-
     }
         
     /**
@@ -94,7 +103,20 @@ export abstract class GraphTraversal<T> {
         if(!results){ return []; }
 
         return Array.isArray(results) ? results : [results];
-    }   
+    }
+
+    protected async findPath(target: T, origin: T): Promise<void> {
+
+        let targetHash: string = target ? await this.getNodeHash(target) : null,
+            originHash: string = origin ? await this.getNodeHash(origin) : null;
+
+        if( targetHash == originHash || origin == null ){
+            console.log(targetHash);
+        } else {
+            await this.findPath(target, this.hashedNodes[ this.parentMap[originHash] ]);
+            console.log(originHash);
+        }
+    }
 
     /**
      * Has the node been discovered
@@ -127,8 +149,12 @@ export abstract class GraphTraversal<T> {
     /**
      * Get node hash
      */
-    protected getNodeHash(node: T): Promise<string> {
-        return this.options.getNodeHash(node);
+    protected async getNodeHash(node: T): Promise<string> {
+        let result: string = await this.options.getNodeHash(node);
+
+        this.hashedNodes[ result ] = node;
+
+        return result;
     }
 
     /**
@@ -158,5 +184,7 @@ export abstract class GraphTraversal<T> {
     protected initializeMaps(): void {
         this.processedNodesMap = {};
         this.discoveredNodesMap = {};
+        this.hashedNodes = {};
+        this.parentMap = {};
     }
 }

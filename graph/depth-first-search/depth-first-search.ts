@@ -1,4 +1,4 @@
-﻿import { GraphTraversal, TGraphTraversalOptions, TraversalType } from '../graph-traversal';
+﻿import { GraphTraversal, TraversalType, TGraphTraversalOptions } from '../graph-traversal';
 
 
 
@@ -10,12 +10,32 @@
  */
 export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
-    protected parentMap: { [nodeHash: string]: string; } = {};
-
-    constructor(options: TGraphTraversalOptions<T>) {
+    constructor(options: TGraphTraversalOptions<T>, detectCycle:boolean = false) {
         super(options);
-    }
 
+        if(detectCycle){
+            let formerProcessEdge = this.options.processEdge;
+
+            this.options.processEdge = async (origin: T, target: T) => {
+                
+                let isDiscovered = await this.isNodeDiscovered(target),
+                    originHash: string = await this.getNodeHash(origin),
+                    targetHash: string = await this.getNodeHash(target);
+
+                if(isDiscovered && this.parentMap[ originHash ] != targetHash ){
+                    
+                    console.log(this.parentMap);
+
+                    await this.findPath(target, origin);
+
+                    throw new Error(`Cycle Detected ${originHash} -> ${targetHash}`);
+                }
+
+                await formerProcessEdge(origin, target);
+            };
+        }
+    }
+    
     /**
      * Triggers DFS
      */
@@ -24,7 +44,6 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         type: "recursive" | "iterative" = "recursive"): Promise<void> {
         
         this.initializeMaps();
-        this.parentMap = {};
 
         if(type == "recursive"){
             await this.performRecursive(node, treeTraversalType);
@@ -46,8 +65,6 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         // call processing method early
         if(treeTraversalType == TraversalType.PreOrder){
             await this.processNode(node);
-            // mark as processed
-            await this.markNodeAsProcessed(node);
         }
 
         // get adjacent nodes
@@ -60,6 +77,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
                     isDiscovered: boolean = await this.isNodeDiscovered(adjacentNode);
 
                 if(!isDiscovered){
+                    // keep parent maps
                     this.parentMap[ await this.getNodeHash(adjacentNode) ] = (await this.getNodeHash(node));
 
                     // process edge
@@ -85,13 +103,14 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         // call processing method late
         if (treeTraversalType == TraversalType.PostOrder) {
             await this.processNode(node);
-            // mark as processed
-            await this.markNodeAsProcessed(node);
         }
 
-        
+        // mark as processed
+        await this.markNodeAsProcessed(node);
 
     }
+
+    
 
     /**
      * DFS core algorithm ("Iterative")

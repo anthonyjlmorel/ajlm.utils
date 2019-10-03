@@ -1,4 +1,4 @@
-import { GraphTraversal, TraversalType } from '../graph-traversal';
+import { GraphTraversal, TraversalType, TGraphTraversalOptions } from '../graph-traversal';
 
 
 /**
@@ -8,6 +8,7 @@ import { GraphTraversal, TraversalType } from '../graph-traversal';
  * 
  */
 export class BreadthFirstSearch<T> extends GraphTraversal<T> {
+
 
     /**
      * Triggers BFS. The callback is called against each unvisited node.
@@ -33,7 +34,6 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
 
             if(treeTraversal == TraversalType.PreOrder){
                 await this.processNode(v.node);
-                await this.markNodeAsProcessed(v.node);
             }
 
             let adjacentNodes: T[] = await this.getAdjacentNodes(v.node);
@@ -48,15 +48,17 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
                     await this.processEdge(v.node, adjacendNode, v.level + 1);
                 }
                 if(!isDiscovered){
-                    queue.push({ node: adjacentNodes[i], parent: v.node, level: v.level + 1 });
+                    queue.push({ node: adjacendNode, parent: v.node, level: v.level + 1 });
+                    this.parentMap[ (await this.getNodeHash(adjacendNode)) ] = (await this.getNodeHash(v.node));
                     await this.markNodeAsDiscovered(adjacendNode);
                 }
             }
 
             if(treeTraversal == TraversalType.PostOrder){
                 await this.processNode(v.node);
-                await this.markNodeAsProcessed(v.node);
             }
+
+            await this.markNodeAsProcessed(v.node);
         }
 
     }
