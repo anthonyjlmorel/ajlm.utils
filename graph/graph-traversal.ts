@@ -57,12 +57,16 @@ export abstract class GraphTraversal<T> {
     protected processedNodesMap: { [hash: string]: T; } = {};
 
     /**
+<<<<<<< HEAD
      * Nodes by hashes
      */
     protected hashedNodes : { [hash: string]: T; } = {};
 
     /**
      * Parents map
+=======
+     * Parents Map
+>>>>>>> master
      */
     protected parentMap: { [nodeHash: string]: string; } = {};
 

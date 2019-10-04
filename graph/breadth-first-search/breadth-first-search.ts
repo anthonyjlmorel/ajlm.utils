@@ -11,9 +11,9 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
 
 
     /**
-     * Triggers BFS. The callback is called against each unvisited node.
+     * Triggers BFS
      */
-    public async perform(node: T, treeTraversal: TraversalType): Promise<void> {
+    public async perform(node: T, treeTraversal: TraversalType = TraversalType.PostOrder): Promise<void> {
         
         this.initializeMaps();
 
@@ -22,7 +22,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
     }
 
 
-    private async performInternal(node: T, treeTraversal: TraversalType = TraversalType.PostOrder): Promise<void> {
+    private async performInternal(node: T, treeTraversal: TraversalType): Promise<void> {
     
         let queue: { node: T; parent:T; level: number; } [] = [ { node: node, parent: null, level: 0 } ];
 
@@ -56,7 +56,7 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
             if(treeTraversal == TraversalType.PostOrder){
                 await this.processNode(v.node);
             }
-
+            
             await this.markNodeAsProcessed(v.node);
         }
 
