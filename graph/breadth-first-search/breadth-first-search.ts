@@ -39,18 +39,17 @@ export class BreadthFirstSearch<T> extends GraphTraversal<T> {
             let adjacentNodes: T[] = await this.getAdjacentNodes(v.node);
 
             for(var i = 0; i<adjacentNodes.length; i++) {
-                let adjacendNode: T = adjacentNodes[i];
+                let adjacentNode: T = adjacentNodes[i];
 
-                let isProcessed: boolean = await this.isNodeProcessed(adjacendNode),
-                    isDiscovered: boolean = await this.isNodeDiscovered(adjacendNode);
+                let adjacentNodeState = await this.getNodeState(adjacentNode);
 
-                if(!isProcessed || this.isDirected()){
-                    await this.processEdge(v.node, adjacendNode, v.level + 1);
+                if(!adjacentNodeState.isProcessed || this.isDirected()){
+                    await this.processEdge(v.node, adjacentNode, v.level + 1);
                 }
-                if(!isDiscovered){
-                    queue.push({ node: adjacendNode, parent: v.node, level: v.level + 1 });
-                    this.parentMap[ (await this.getNodeHash(adjacendNode)) ] = (await this.getNodeHash(v.node));
-                    await this.markNodeAsDiscovered(adjacendNode);
+                if(!adjacentNodeState.isDiscovered){
+                    queue.push({ node: adjacentNode, parent: v.node, level: v.level + 1 });
+                    this.parentMap[ adjacentNodeState.hash ] = (await this.getNodeHash(v.node));
+                    await this.markNodeAsDiscovered(adjacentNode);
                 }
             }
 

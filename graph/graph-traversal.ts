@@ -6,6 +6,15 @@ export enum TraversalType {
     PostOrder
 }
 
+/**
+ * Defining a node state
+ */
+export type TNodeState = {
+    hash: string;
+    isDiscovered: boolean;
+    isProcessed: boolean;
+};
+
 export type TGraphTraversalOptions<T> = {
 
     /**
@@ -105,31 +114,33 @@ export abstract class GraphTraversal<T> {
         return Array.isArray(results) ? results : [results];
     }
 
-    protected async findPath(target: T, origin: T): Promise<void> {
+    /**
+     * Given the parents map, find the path from target to origin.
+     * 
+     */
+    protected async findPath(target: T, origin: T, result: T[]): Promise<void> {
 
         let targetHash: string = target ? await this.getNodeHash(target) : null,
             originHash: string = origin ? await this.getNodeHash(origin) : null;
 
         if( targetHash == originHash || origin == null ){
-            console.log(targetHash);
+            result.push(target);
         } else {
-            await this.findPath(target, this.hashedNodes[ this.parentMap[originHash] ]);
-            console.log(originHash);
+            await this.findPath(target, this.hashedNodes[ this.parentMap[originHash] ], result);
+            result.push(origin);
         }
     }
 
-    /**
-     * Has the node been discovered
-     */
-    protected async isNodeDiscovered(node: T): Promise<boolean> {
-        return this.discoveredNodesMap[await this.getNodeHash(node)] !== undefined;
-    }
+    protected async getNodeState(node: T): Promise<TNodeState>{
+        let hash: string = await this.getNodeHash(node),
+            isDiscovered: boolean = this.discoveredNodesMap[hash] !== undefined,
+            isProcessed: boolean = this.processedNodesMap[hash] !== undefined;
 
-    /**
-     * Has the node been processed
-     */
-    protected async isNodeProcessed(node: T): Promise<boolean> {
-        return this.processedNodesMap[await this.getNodeHash(node)] !== undefined;
+        return {
+            hash: hash,
+            isDiscovered: isDiscovered,
+            isProcessed: isProcessed
+        }
     }
 
     /**

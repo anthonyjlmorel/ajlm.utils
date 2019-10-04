@@ -1,6 +1,6 @@
 // Graph Traversal
-export { DepthFirstSearch } from "./graph/depth-first-search/depth-first-search";
 export { TGraphTraversalOptions, TraversalType } from "./graph/graph-traversal";
+export { DepthFirstSearch, DfsTraversalError, DfsTraversalErrorType } from "./graph/depth-first-search/depth-first-search";
 export { BreadthFirstSearch } from "./graph/breadth-first-search/breadth-first-search";
 
 

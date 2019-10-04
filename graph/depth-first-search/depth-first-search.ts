@@ -1,5 +1,21 @@
 ﻿import { GraphTraversal, TraversalType, TGraphTraversalOptions } from '../graph-traversal';
 
+/**
+ * Possible Error Types
+ */
+export enum DfsTraversalErrorType {
+    Cycle = 0
+};
+
+/**
+ * Traversal Error that can be thrown
+ */
+export class DfsTraversalError<T> {
+
+    constructor(public type: DfsTraversalErrorType,
+                public data: T){}
+    
+}
 
 
 /**
@@ -10,7 +26,7 @@
  */
 export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
-    constructor(options: TGraphTraversalOptions<T>, detectCycle:boolean = false) {
+    constructor(options: TGraphTraversalOptions<T>, detectCycle: boolean = false) {
         super(options);
 
         if(detectCycle){
@@ -18,17 +34,20 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
             this.options.processEdge = async (origin: T, target: T) => {
                 
-                let isDiscovered = await this.isNodeDiscovered(target),
+                let targetState = await this.getNodeState(target),
                     originHash: string = await this.getNodeHash(origin),
-                    targetHash: string = await this.getNodeHash(target);
+                    targetHash: string = targetState.hash;
 
-                if(isDiscovered && this.parentMap[ originHash ] != targetHash ){
-                    
-                    console.log(this.parentMap);
+                if((targetState.isDiscovered && !targetState.isProcessed) 
+                    && this.parentMap[ targetHash ] != originHash ){
 
-                    await this.findPath(target, origin);
+                    let path: T[] = [];
+                    await this.findPath(target, origin, path);
 
-                    throw new Error(`Cycle Detected ${originHash} -> ${targetHash}`);
+                    path.push(target);
+
+                    // Throw error (and consequently, stop traversal)
+                    throw new DfsTraversalError<T[]>(DfsTraversalErrorType.Cycle, path);
                 }
 
                 await formerProcessEdge(origin, target);
@@ -74,9 +93,9 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
             for(var i = 0; i< adjacentNodes.length; i++){
 
                 let adjacentNode: T = adjacentNodes[i],
-                    isDiscovered: boolean = await this.isNodeDiscovered(adjacentNode);
+                    adjacentNodeState = await this.getNodeState(adjacentNode);
 
-                if(!isDiscovered){
+                if(!adjacentNodeState.isDiscovered){
                     // keep parent maps
                     this.parentMap[ await this.getNodeHash(adjacentNode) ] = (await this.getNodeHash(node));
 
@@ -88,8 +107,8 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
                 } else {
                     // do not use else-if here to avoid awaiting a promising for nothing
-                    let isProcessed: boolean = await this.isNodeProcessed(adjacentNode),
-                        childHash = await this.getNodeHash(adjacentNode),
+                    let isProcessed: boolean = adjacentNodeState.isProcessed,
+                        childHash = adjacentNodeState.hash,
                         parentHash = await this.getNodeHash(node);
 
                     if((!isProcessed && this.parentMap[parentHash] != childHash) || this.isDirected()){
@@ -138,25 +157,24 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
             let adjacentNodes: T[] = await this.getAdjacentNodes(queueItem.node);
 
             for(var i = 0; i<adjacentNodes.length; i++) {
-                let adjacendNode: T = adjacentNodes[i];
+                let adjacentNode: T = adjacentNodes[i];
 
-                let isProcessed: boolean = await this.isNodeProcessed(adjacendNode),
-                    isDiscovered: boolean = await this.isNodeDiscovered(adjacendNode),
-                    childHash = await this.getNodeHash(adjacendNode),
+                let adjacentNodeState = await this.getNodeState(adjacentNode),
+                    childHash = adjacentNodeState.hash,
                     parentHash = await this.getNodeHash(node);
 
-                if((!isProcessed && this.parentMap[parentHash] != childHash) || this.isDirected()){
+                if((!adjacentNodeState.isProcessed && this.parentMap[parentHash] != childHash) || this.isDirected()){
                     resultQueue.push({
                         type: "edge",
-                        node: adjacendNode,
+                        node: adjacentNode,
                         parent: queueItem.node
                     });
                 }
-                if(!isDiscovered){
-                    this.parentMap[ await this.getNodeHash(adjacendNode) ] = (await this.getNodeHash(node));
+                if(!adjacentNodeState.isDiscovered){
+                    this.parentMap[ childHash ] = parentHash;
                     
-                    stack.push({ node: adjacendNode, parent: queueItem.node });
-                    await this.markNodeAsDiscovered(adjacendNode);
+                    stack.push({ node: adjacentNode, parent: queueItem.node });
+                    await this.markNodeAsDiscovered(adjacentNode);
                 }
             }
 
