@@ -6,3 +6,6 @@ export { BreadthFirstSearch } from "./graph/breadth-first-search/breadth-first-s
 
 // Command Line Parameters
 export { ParametersGetter, TCommandLineParameters } from "./command-line/parameters-getter";
+
+// Configuration Holders
+export { ConfigurationHolder } from "./conf-holder/configuration-holder";
