@@ -26,11 +26,7 @@ export class DfsTraversalError<T> {
  */
 export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
-<<<<<<< HEAD
     constructor(options: TGraphTraversalOptions<T>, detectCycle: boolean = false) {
-=======
-    constructor(options: TGraphTraversalOptions<T>) {
->>>>>>> master
         super(options);
 
         if(detectCycle){
@@ -99,13 +95,8 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
                 let adjacentNode: T = adjacentNodes[i],
                     adjacentNodeState = await this.getNodeState(adjacentNode);
 
-<<<<<<< HEAD
                 if(!adjacentNodeState.isDiscovered){
                     // keep parent maps
-=======
-                if(!isDiscovered){
-
->>>>>>> master
                     this.parentMap[ await this.getNodeHash(adjacentNode) ] = (await this.getNodeHash(node));
 
                     // process edge
