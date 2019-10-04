@@ -10,8 +10,6 @@
  */
 export class DepthFirstSearch<T> extends GraphTraversal<T> {
 
-    protected parentMap: { [nodeHash: string]: string; } = {};
-
     constructor(options: TGraphTraversalOptions<T>) {
         super(options);
     }
@@ -24,7 +22,6 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         type: "recursive" | "iterative" = "recursive"): Promise<void> {
         
         this.initializeMaps();
-        this.parentMap = {};
 
         if(type == "recursive"){
             await this.performRecursive(node, treeTraversalType);
@@ -60,6 +57,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
                     isDiscovered: boolean = await this.isNodeDiscovered(adjacentNode);
 
                 if(!isDiscovered){
+
                     this.parentMap[ await this.getNodeHash(adjacentNode) ] = (await this.getNodeHash(node));
 
                     // process edge
@@ -96,7 +94,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
     /**
      * DFS core algorithm ("Iterative")
      * 
-     * @TODO ...
+     * @TODO ... To test ... Not finished
      */
     private async performIterative(node: T, treeTraversalType: TraversalType): Promise<void> {
 

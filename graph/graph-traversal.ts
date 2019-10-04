@@ -48,6 +48,11 @@ export abstract class GraphTraversal<T> {
     protected processedNodesMap: { [hash: string]: T; } = {};
 
     /**
+     * Parents Map
+     */
+    protected parentMap: { [nodeHash: string]: string; } = {};
+
+    /**
      * Options
      */
     protected options: TGraphTraversalOptions<T>;
@@ -158,5 +163,6 @@ export abstract class GraphTraversal<T> {
     protected initializeMaps(): void {
         this.processedNodesMap = {};
         this.discoveredNodesMap = {};
+        this.parentMap = {};
     }
 }
