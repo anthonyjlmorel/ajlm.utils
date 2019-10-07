@@ -30,28 +30,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         super(options);
 
         if(detectCycle){
-            let formerProcessEdge = this.options.processEdge;
-
-            this.options.processEdge = async (origin: T, target: T) => {
-                
-                let targetState = await this.getNodeState(target),
-                    originHash: string = await this.getNodeHash(origin),
-                    targetHash: string = targetState.hash;
-
-                if((targetState.isDiscovered && !targetState.isProcessed) 
-                    && this.parentMap[ targetHash ] != originHash ){
-
-                    let path: T[] = [];
-                    await this.findPath(target, origin, path);
-
-                    path.push(target);
-
-                    // Throw error (and consequently, stop traversal)
-                    throw new DfsTraversalError<T[]>(DfsTraversalErrorType.Cycle, path);
-                }
-
-                await formerProcessEdge(origin, target);
-            };
+            this.attachCycleDetector();   
         }
     }
     
@@ -199,5 +178,33 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
             }
         }
         
+    }
+
+    /**
+     * Attaches handler to detect cycle in graph
+     */
+    private attachCycleDetector(): void {
+        let formerProcessEdge = this.options.processEdge;
+
+        this.options.processEdge = async (origin: T, target: T) => {
+            
+            let targetState = await this.getNodeState(target),
+                originHash: string = await this.getNodeHash(origin),
+                targetHash: string = targetState.hash;
+
+            if((targetState.isDiscovered && !targetState.isProcessed) 
+                && this.parentMap[ targetHash ] != originHash ){
+
+                let path: T[] = [];
+                await this.findPath(target, origin, path);
+
+                path.push(target);
+
+                // Throw error (and consequently, stop traversal)
+                throw new DfsTraversalError<T[]>(DfsTraversalErrorType.Cycle, path);
+            }
+
+            await formerProcessEdge(origin, target);
+        };
     }
 }
