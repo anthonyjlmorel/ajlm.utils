@@ -20,6 +20,11 @@ export type TLinkedListOptions<T> = {
 export class LinkedList<T> {
 
     /**
+     * Number of items
+     */
+    protected itemsCount: number = 0;
+
+    /**
      * Method allowing us to compare two nodes
      */
     protected equals: (left: T, right: T) => Promise<boolean>;
@@ -39,9 +44,11 @@ export class LinkedList<T> {
      * Replaces an entry by another one.
      * Uses the equals method to find value.
      * 
-     * Can append at the tail if flag provided
+     * Can append at the tail if flag provided.
+     * 
+     * @return true if data is inserted
      */
-    public async replace(data: T, replacer: T, appendIfNotFound:boolean = false): Promise<void> {
+    public async replace(data: T, replacer: T, appendIfNotFound:boolean = false): Promise<boolean> {
 
         let tail = await this.browseList( async (item: TLinkedListItem<T>)=> {
 
@@ -60,8 +67,14 @@ export class LinkedList<T> {
                 data: replacer,
                 next: null
             };
+
+            this.itemsCount++;
+
+            return true;
         }
         
+        // if tail is null, that means we inserted something
+        return !tail;
     }
 
     /**
@@ -80,6 +93,7 @@ export class LinkedList<T> {
 
         if(!this.rootItem){
             this.rootItem = newItem;
+            this.itemsCount++;
             return;
         }
 
@@ -93,6 +107,8 @@ export class LinkedList<T> {
                 let next = this.rootItem;
                 this.rootItem = newItem;
                 newItem.next = next;
+
+                this.itemsCount++;
                 return;
             }
         }
@@ -116,6 +132,7 @@ export class LinkedList<T> {
             tail.next = newItem;
         }
         
+        this.itemsCount++;
     }
 
     /**
@@ -163,31 +180,51 @@ export class LinkedList<T> {
      * 
      * @param data data to remove
      */
-    public async delete(data: T): Promise<void> {
+    public async delete(data: T): Promise<T> {
         if(!this.rootItem) {
-            return;
+            return undefined;
         }
+
+        let result: T;
 
         // treat root first
         let areEquals: boolean = await this.equals(this.rootItem.data, data);
 
         if(areEquals){
+            result = this.rootItem.data;
             this.rootItem = this.rootItem.next;
-            return;
+            this.itemsCount--;
+            return result;
         }
 
-        await this.browseList( async(item: TLinkedListItem<T>) => {
+        let tail = await this.browseList( async(item: TLinkedListItem<T>) => {
             if(item.next){
                 areEquals = await this.equals(item.next.data, data);
                 if(areEquals){
+                    
+                    result = item.next.data;
+
                     item.next = item.next.next;
+                    this.itemsCount--
                     return true;
                 }
             }
         });
         
+        return result;
     }
 
+    /**
+     * Return first data of the list
+     */
+    public getHead(): T {
+        return this.rootItem ? this.rootItem.data : null;
+    }
+
+    /**
+     * List browsing helper.
+     * Return the tail of the list unless the callback returned true meaning a browsing stop.
+     */
     private async browseList(callback: (item: TLinkedListItem<T>) => Promise<boolean | void>): Promise<TLinkedListItem<T>> {
 
         if(!this.rootItem){
@@ -212,6 +249,13 @@ export class LinkedList<T> {
         // without stopping signal
         return current;
 
+    }
+
+    /**
+     * Gets items count
+     */
+    public getCount(): number {
+        return this.itemsCount;
     }
 
 }
