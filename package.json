@@ -9,6 +9,10 @@
     "build": "npm run compile",
     "compile": "node ./node_modules/typescript/bin/tsc -p ."
   },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/anthonyjlmorel/ajlm.utils.git"
+  },
   "publishConfig":{
     "registry":"http://localhost:4873"
   },
