@@ -68,7 +68,9 @@ confHolder.get("rootParameter") // false
 
 ```
 
-## Graph Theory
+## Graph Theory (to finish)
+=======
+
 ### Breadth First Search Traversal
 ### Depth First Search Traversal
 
