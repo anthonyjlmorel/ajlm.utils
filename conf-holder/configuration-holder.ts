@@ -28,18 +28,23 @@ export class ConfigurationHolder<T> {
      * Given a dotted path, return the matching value in the cfg
      * Exemple get("build.hash.hashFileName") should return ".hash";
      */
-    public get(pathToProperty: string): any {
-        let item = this.cfg,
+    public get<R>(pathToProperty: string): R {
+        let item: T = this.cfg,
             dotted: string[] = pathToProperty.split(".");
 
-        while(dotted.length){
-            let prop = dotted.shift();
-            if( item[ prop ] ){
-                item = item[ prop ];
+        let prop = dotted.shift();
+        let current = item[prop];
+
+        while (dotted.length && current != undefined) {
+
+            prop = dotted.shift();
+            if( current[ prop ] ){
+                current = current[ prop ];
             }
+
         }
 
-        return item;
+        return current;
     }
 
 

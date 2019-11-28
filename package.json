@@ -9,6 +9,9 @@
     "build": "npm run compile",
     "compile": "node ./node_modules/typescript/bin/tsc -p ."
   },
+  "publishConfig":{
+    "registry":"http://localhost:4873"
+  },
   "files":[
     "**/*.js",
     "**/*.md"
@@ -20,6 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/mocha": "~5.2.7",
+    "@types/node": "^12.7.5",
     "typescript": "~3.4.0",
     "mocha": "~5.2.0"
   }

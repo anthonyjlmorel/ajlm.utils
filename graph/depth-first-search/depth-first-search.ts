@@ -13,7 +13,7 @@ export enum DfsTraversalErrorType {
 export class DfsTraversalError<T> {
 
     constructor(public type: DfsTraversalErrorType,
-                public data: T){}
+                public data: T) {}
     
 }
 
@@ -30,7 +30,7 @@ export class DepthFirstSearch<T> extends GraphTraversal<T> {
         super(options);
 
         if(detectCycle){
-            this.attachCycleDetector();   
+            this.attachCycleDetector();
         }
     }
     
