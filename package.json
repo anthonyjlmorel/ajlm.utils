@@ -1,7 +1,7 @@
 {
   "name": "ajlm.utils",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "description": "Some serviceable classes",
   "main": "index.js",
   "scripts": {
