@@ -1,7 +1,7 @@
 {
   "name": "ajlm.utils",
   "type": "module",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Some serviceable classes",
   "main": "index.js",
   "scripts": {
@@ -10,19 +10,17 @@
     "compile": "node ./node_modules/typescript/bin/tsc -p ."
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/anthonyjlmorel/ajlm.utils.git"
+    "type": "git",
+    "url": "https://github.com/anthonyjlmorel/ajlm.utils.git"
   },
-  "publishConfig":{
-    "registry":"http://localhost:4873"
+  "publishConfig": {
+    "registry": "http://localhost:4873"
   },
-  "files":[
+  "files": [
     "**/*.js",
     "**/*.md"
   ],
-  "dependencies": {
-    
-  },
+  "dependencies": {},
   "author": "Anthony JL Morel",
   "license": "MIT",
   "devDependencies": {
